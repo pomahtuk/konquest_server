@@ -1,0 +1,21 @@
+nav.navbar.navbar-dark.bg-primary.navbar-fixed-top
+  a.navbar-brand(href="#") Konquest
+
+  ul.nav.navbar-nav
+    li.nav-item.active
+      a.nav-link(href="#")
+        | Home
+        span.sr-only
+          | (current)
+
+  ul.nav.navbar-nav.float-xs-right
+    if (!user)
+      li.nav-item
+        a.nav-link(href="/users/login") Login
+      li.nav-item
+        a.nav-link(href="/users/register") Register
+    if (user)
+      li.nav-item
+        a.nav-link(href="/users/" + user._id) #{user.username}
+      li.nav-item
+        a.nav-link(href="/users/logout") Logout

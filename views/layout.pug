@@ -3,15 +3,20 @@ html
   head
     title= title
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    link(href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css', rel='stylesheet', media='screen')
+    link(href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css',
+      rel='stylesheet', media='screen',
+      integrity='sha384-AysaV+vQoT3kOAXZkl02PThvDr8HYKPZhNT5h/CXfBThSRXQ6jW5DO2ekP5ViFdi',
+      crossorigin='anonymous'
+    )
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    if (error && error.length > 0)
-      br
-      h4.error-msg= error
-      br
+    include common/header.pug
+
+    if (error)
+      .container
+        .alert.alert-danger
+          = error.message
 
     block content
 
   script(src='http://code.jquery.com/jquery.js')
-  script(src='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js')

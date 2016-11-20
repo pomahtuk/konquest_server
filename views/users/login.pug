@@ -2,15 +2,20 @@ extends ../layout
 
 block content
   .container
-    h1 Login Page
-    p.lead Say something worthwhile here.
-    br
-    form(role='form', action="/users/login",method="post", style='max-width: 300px;')
-      .form-group
-          input.form-control(type='text', name="username", placeholder='Enter Username')
-      .form-group
-        input.form-control(type='password', name="password", placeholder='Password')
-      button.btn.btn-default(type='submit') Submit
+    .row.flex-items-xs-center
+      .col-xs-6.offset-xs-3
+        h1 Login Page
 
-      a(href='/')
-        button.btn.btn-primary(type="button") Cancel
+        form(role='form', action="/users/login", method="post")
+          .form-group
+            input.form-control(type='text', name="username", placeholder='Enter Username')
+          .form-group
+            input.form-control(type='password', name="password", placeholder='Password')
+
+          button.btn.btn-primary(type='submit')
+            | Submit
+
+          | &nbsp;
+
+          a(href='/')
+            button.btn.btn-secondary(type="button") Cancel

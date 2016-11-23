@@ -46,6 +46,6 @@ Account.plugin(passportLocalMongoose);
 const accountModel = mongoose.model('Account', Account);
 
 // promise override
-accountModel.register = Promise.promisify(accountModel.register, {context: accountModel});
+accountModel.register = Promise.promisify(accountModel.register, { context: accountModel });
 
 export default accountModel;

@@ -23,16 +23,22 @@ const Game = new Schema({
   ],
   settings: {
     size: {
+      height: {
+        type: Number,
+        required: true,
+        min: [5, 'Field height is too small'],
+        max: [20, 'Field height is too big'],
+      },
       width: {
         type: Number,
         required: true,
         min: [5, 'Field width is too small'],
         max: [20, 'Field width is too big'],
       },
-      height: {
+      planetCount: {
         type: Number,
         required: true,
-        min: [5, 'Field height is too small'],
+        min: [2, 'Not enought planet to fight for'],
         max: [20, 'Field height is too big'],
       }
     },
@@ -44,7 +50,19 @@ const Game = new Schema({
     }
   },
   // initial game field state
-  initialGameField: Schema.type.Mixed,
+  initialGameField: [
+    [
+      {
+        coordinates: {
+          type: Array,
+          required: true,
+        },
+        planet: {
+
+        }
+      }
+    ]
+  ],
   dateStarted: { type: Date, default: Date.now },
 });
 
@@ -57,6 +75,15 @@ Game.path('players').validate(
   players => players && (players.length >= 2),
   'Game should have at least two players'
 );
+
+// we could not have more planets than cells on gamefield
+Game.path('settings').schema.path('planetCount').validate((planetCount) => {
+  const { height, width } = this;
+  const gameFieldSize = height * width;
+  // should be better than this, no direct swarms
+  return planetCount < gameFieldSize;
+}, 'Game should have at least two players');
+
 
 /*
  * Model methonds

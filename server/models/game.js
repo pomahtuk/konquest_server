@@ -91,13 +91,14 @@ Game.path('settings').schema.path('planetCount').validate((planetCount) => {
 // this filed will represent state of gamefield
 // after initial generation and with all turns applied
 Game.methods.getGameFieldState = (turn) => {
+  const { turns, initialGameField } = this;
   // let us check function argument. If none provided - return latest state,
   // if value present and <= than turns count - return state on this turn
-  const targetedTour = (turn || turn === 0) ? turn : this.turns.length - 1;
+  const targetedTour = (turn || turn === 0) ? turn : turns.length - 1;
 
   // now based on settings and turns determine state of gamefield
-  const effectiveTurns = this.turns.slice(0, targetedTour + 1);
-  const gameFieldState = effectiveTurns.reduce(applyTurnToGameField, this.initialGameField);
+  const effectiveTurns = turns.slice(0, targetedTour + 1);
+  const gameFieldState = effectiveTurns.reduce(applyTurnToGameField, initialGameField);
 
   return gameFieldState;
 };

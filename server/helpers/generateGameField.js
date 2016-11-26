@@ -1,7 +1,7 @@
-const getRandomFromZero = max => Math.random() * (max);
+const getRandomIntFromZero = max => Math.floor(Math.random() * (max + 1));
 
 const coordinatesDiceRoll = (height, width) =>
-  [getRandomFromZero(height), getRandomFromZero(width)];
+  [getRandomIntFromZero(height), getRandomIntFromZero(width)];
 
 const isPlanetAllreadyThere = (gameField, coordinates) => {
   const [rowIndex, columnIndex] = coordinates;

@@ -3,28 +3,45 @@ const getRandomIntFromZero = max => Math.floor(Math.random() * (max + 1));
 const coordinatesDiceRoll = (height, width) =>
   [getRandomIntFromZero(height), getRandomIntFromZero(width)];
 
-const isPlanetAllreadyThere = (gameField, coordinates) => {
+const couldWePlacePlanetHere = (gameField, coordinates) => {
   const [rowIndex, columnIndex] = coordinates;
+  // not enought, need to check surroundings
   return !!gameField[rowIndex][columnIndex].planet;
+};
+
+const generatePlanet = (coordinates) => {
+  // make some random numbers here
+  // but reminder - planets closer to edges
+  // should be weaker so player will always be able
+  // to capture first one
+  const planet = {
+    coordinates,
+    shipAmount: 0,
+    production: 10,
+    shipStrength: 1,
+    belongsTo: null,
+  };
+
+  return planet;
 };
 
 const populateGameFieldWithPlanets = (gameField, settings) => {
   const { width, height, planetCount } = settings;
+  const newGameField = Object.assign({}, gameField);
 
   // make a coordinates dice roll for each planet
   [...Array(planetCount)].forEach(() => {
     let coordinates = coordinatesDiceRoll(height, width);
 
-    while (!isPlanetAllreadyThere(gameField, coordinates)) {
+    while (!couldWePlacePlanetHere(gameField, coordinates)) {
       coordinates = coordinatesDiceRoll(height, width);
     }
 
     // at this point we do have vacant coordinates
-
-    return true;
+    newGameField[height][width] = generatePlanet(coordinates);
   });
 
-  return gameField;
+  return newGameField;
 };
 
 const generateGameField = (settings) => {

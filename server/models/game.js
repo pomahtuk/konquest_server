@@ -58,7 +58,29 @@ const Game = new Schema({
           required: true,
         },
         planet: {
-
+          coordinates: {
+            type: Array,
+            required: true,
+          },
+          shipAmount: {
+            type: Number,
+            required: true,
+            min: [0, 'You could not have negative amount of ships on the planet'],
+            max: [9999, 'Too many ships, looks like a mistake']
+          },
+          production: {
+            type: Number,
+            required: true,
+            min: [0, 'Planet could not produce negative amount of ships'],
+            max: [9999, 'Too many ships, looks like a mistake']
+          },
+          shipStrength: {
+            type: Number,
+            required: true,
+            min: [0, 'Ship strength could not be that small'],
+            max: [9999, 'No way this ships could be that strong']
+          },
+          belongsTo: null,
         }
       }
     ]
@@ -79,9 +101,9 @@ Game.path('players').validate(
 // we could not have more planets than cells on gamefield
 Game.path('settings').schema.path('planetCount').validate((planetCount) => {
   const { height, width } = this;
-  const gameFieldSize = height * width;
+  const maximalNumberOfPlanets = Math.floor(height / 2) * Math.floor(width / 2);
   // should be better than this, no direct swarms
-  return planetCount < gameFieldSize;
+  return planetCount < maximalNumberOfPlanets;
 }, 'Game should have at least two players');
 
 

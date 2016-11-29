@@ -5,8 +5,31 @@ const coordinatesDiceRoll = (height, width) =>
 
 const couldWePlacePlanetHere = (gameField, coordinates) => {
   const [rowIndex, columnIndex] = coordinates;
-  // not enought, need to check surroundings
-  return !!gameField[rowIndex][columnIndex].planet;
+  // might be not a best solution to declare like this
+  const neightborsArray = [
+    [rowIndex - 1, columnIndex - 1],
+    [rowIndex - 1, columnIndex],
+    [rowIndex - 1, columnIndex + 1],
+    [rowIndex, columnIndex - 1],
+    [rowIndex, columnIndex + 1],
+    [rowIndex + 1, columnIndex - 1],
+    [rowIndex + 1, columnIndex],
+    [rowIndex + 1, columnIndex + 1],
+  ];
+
+  let somethingPlacedInSurrounding = false;
+
+  // first - check original spot
+  if (gameField[rowIndex][columnIndex].planet) {
+    return false;
+  }
+
+  // then check surroundings
+  somethingPlacedInSurrounding = neightborsArray.some(([neighbourRowIndex, neighbourColumnIndex]) =>
+    !!gameField[neighbourRowIndex][neighbourColumnIndex].planet
+  );
+
+  return !somethingPlacedInSurrounding;
 };
 
 const generatePlanet = (coordinates) => {
@@ -59,7 +82,6 @@ const generateGameField = (settings) => {
   });
 
   // now generate planets to field
-
   return populateGameFieldWithPlanets(gameField, settings);
 };
 

@@ -2,7 +2,8 @@ import mongoose, { Schema } from 'mongoose';
 // import Promise from 'bluebird';
 
 // own helpers
-import applyTurnToGameField from '../helpers/applyTurnToGameField';
+import applyTurnToGame from '../helpers/applyTurnToGameField';
+// import generateGameField from '../helpers/generateGameField';
 
 const Game = new Schema({
   players: [
@@ -49,42 +50,45 @@ const Game = new Schema({
       max: [4, 'Too many players']
     }
   },
-  // initial game field state
-  initialGameField: [
-    [
-      {
-        coordinates: {
-          type: Array,
-          required: true,
-        },
-        planet: {
+  initialState: {
+    initialFleets: [],
+    // initial game field state
+    initialGameField: [
+      [
+        {
           coordinates: {
             type: Array,
             required: true,
           },
-          shipAmount: {
-            type: Number,
-            required: true,
-            min: [0, 'You could not have negative amount of ships on the planet'],
-            max: [9999, 'Too many ships, looks like a mistake']
-          },
-          production: {
-            type: Number,
-            required: true,
-            min: [0, 'Planet could not produce negative amount of ships'],
-            max: [9999, 'Too many ships, looks like a mistake']
-          },
-          shipStrength: {
-            type: Number,
-            required: true,
-            min: [0, 'Ship strength could not be that small'],
-            max: [9999, 'No way this ships could be that strong']
-          },
-          belongsTo: null,
+          planet: {
+            coordinates: {
+              type: Array,
+              required: true,
+            },
+            shipAmount: {
+              type: Number,
+              required: true,
+              min: [0, 'You could not have negative amount of ships on the planet'],
+              max: [9999, 'Too many ships, looks like a mistake']
+            },
+            production: {
+              type: Number,
+              required: true,
+              min: [0, 'Planet could not produce negative amount of ships'],
+              max: [9999, 'Too many ships, looks like a mistake']
+            },
+            shipStrength: {
+              type: Number,
+              required: true,
+              min: [0, 'Ship strength could not be that small'],
+              max: [9999, 'No way this ships could be that strong']
+            },
+            belongsTo: null,
+          }
         }
-      }
-    ]
-  ],
+      ]
+    ],
+  },
   dateStarted: { type: Date, default: Date.now },
 });
 
@@ -113,14 +117,14 @@ Game.path('settings').schema.path('planetCount').validate((planetCount) => {
 // this filed will represent state of gamefield
 // after initial generation and with all turns applied
 Game.methods.getGameFieldState = (turn) => {
-  const { turns, initialGameField } = this;
+  const { turns, initialState } = this;
   // let us check function argument. If none provided - return latest state,
   // if value present and <= than turns count - return state on this turn
   const targetedTour = (turn || turn === 0) ? turn : turns.length - 1;
 
   // now based on settings and turns determine state of gamefield
   const effectiveTurns = turns.slice(0, targetedTour + 1);
-  const gameFieldState = effectiveTurns.reduce(applyTurnToGameField, initialGameField);
+  const gameFieldState = effectiveTurns.reduce(applyTurnToGame, initialState);
 
   return gameFieldState;
 };

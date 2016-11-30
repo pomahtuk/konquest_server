@@ -5,7 +5,7 @@ const pe = new PrettyError();
 pe.skipNodeFiles();
 pe.skipPackage('express');
 pe.skipPackage('bluebird');
-pe.start();
+// pe.start();
 
 const errorHandler = (app) => {
   // catch 404 and forward to error handler
@@ -22,7 +22,7 @@ const errorHandler = (app) => {
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
     // log error to console
-    console.log(err);
+    console.log(pe.render(err));
 
     // render the error page
     res.status(err.status || 500);

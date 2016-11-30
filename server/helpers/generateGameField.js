@@ -1,5 +1,7 @@
 const getRandomIntFromZero = max => Math.floor(Math.random() * max);
 
+const getRandomIntArbitrary = (min, max) => Math.floor((Math.random() * (max - min)) + min);
+
 const getRandomArbitrary = (min, max) => (Math.random() * (max - min)) + min;
 
 const getPlanetStrengthAdjuster = (coordinates, settings) => {
@@ -8,7 +10,7 @@ const getPlanetStrengthAdjuster = (coordinates, settings) => {
 
   if (planetShouldBeWeaker) {
     // lets assume this is weak enought
-    return getRandomArbitrary(0, 5);
+    return getRandomArbitrary(0, 0.5);
   }
 
   return 0;
@@ -18,12 +20,20 @@ const coordinatesDiceRoll = (height, width) =>
   [getRandomIntFromZero(height), getRandomIntFromZero(width)];
 
 const getNeightboursArray = ([rowIndex, columnIndex], settings) => {
-  const maxRowIndex = rowIndex + 1 > settings.height ? rowIndex : rowIndex + 1;
+  const maxRowIndex = rowIndex + 1 >= settings.height ? rowIndex : rowIndex + 1;
   const minRowIndex = rowIndex - 1 < 0 ? rowIndex : rowIndex - 1;
-  const maxColIndex = columnIndex + 1 > settings.width ? columnIndex : columnIndex + 1;
+  const maxColIndex = columnIndex + 1 >= settings.width ? columnIndex : columnIndex + 1;
   const minColIndex = columnIndex - 1 < 0 ? columnIndex : columnIndex - 1;
 
-  return [];
+  const neightboursArray = [];
+
+  for (let i = minRowIndex; i <= maxRowIndex; i += 1) {
+    for (let j = minColIndex; j <= maxColIndex; j += 1) {
+      neightboursArray.push([i, j]);
+    }
+  }
+
+  return neightboursArray;
 };
 
 const couldWePlacePlanetHere = (gameField, coordinates, settings) => {
@@ -44,6 +54,7 @@ const couldWePlacePlanetHere = (gameField, coordinates, settings) => {
   );
 
   return !somethingPlacedInSurrounding;
+  // return true;
 };
 
 const generatePlanet = (coordinates, settings) => {
@@ -52,24 +63,41 @@ const generatePlanet = (coordinates, settings) => {
   // should be weaker so player will always be able
   // to capture first one
   const weaknessMultiplier = getPlanetStrengthAdjuster(coordinates, settings);
-  const planetProduction = getRandomIntFromZero(10);
+  const planetProduction = getRandomIntArbitrary(5, 10);
 
   const planet = {
     coordinates,
     shipAmount: planetProduction,
     production: planetProduction,
-    shipStrength: getRandomArbitrary(0, 1 - weaknessMultiplier),
+    shipStrength: getRandomArbitrary(0.3, 1 - weaknessMultiplier),
     belongsTo: null,
   };
 
   return planet;
 };
 
+const generatePlayerPlanet = (coordinates, playerIndex) => {
+  const planet = {
+    coordinates,
+    shipAmount: 10,
+    production: 10,
+    shipStrength: 0.75,
+    belongsTo: `player${playerIndex}`,
+  };
+
+  return planet;
+};
+
 const populateGameFieldWithPlanets = (gameField, settings) => {
-  const { width, height, planetCount } = settings;
+  const { width, height, planetCount, players } = settings;
   const newGameField = Object.assign({}, gameField);
 
   // first - create players planets
+  for (let playerIndex = 0; playerIndex < players; playerIndex += 1) {
+    const playerRowIndex = 0;
+    const playerColumnIndex = 0;
+    newGameField[playerRowIndex][playerColumnIndex] = generatePlayerPlanet([0, 0], playerIndex);
+  }
 
   // make a coordinates dice roll for each planet
   [...Array(planetCount)].forEach(() => {
@@ -79,8 +107,10 @@ const populateGameFieldWithPlanets = (gameField, settings) => {
       coordinates = coordinatesDiceRoll(height, width);
     }
 
+    const [rowIndex, columnIndex] = coordinates;
+
     // at this point we do have vacant coordinates
-    newGameField[height][width] = generatePlanet(coordinates, settings);
+    newGameField[rowIndex][columnIndex].planet = generatePlanet(coordinates, settings);
   });
 
   return newGameField;
@@ -88,17 +118,14 @@ const populateGameFieldWithPlanets = (gameField, settings) => {
 
 const generateGameField = (settings) => {
   const { width, height } = settings;
+  const gameField = [];
 
-  const gameField = [...Array(height)].map((_, rowIndex) => {
-    const gameFieldRow = [...Array(width)].map((__, columnIndex) => {
-      // here we need to generate cell
-      const gameCell = {
-        coordinates: [rowIndex, columnIndex],
-      };
-      return gameCell;
-    });
-    return gameFieldRow;
-  });
+  for (let i = 0; i < height; i += 1) {
+    gameField[i] = [];
+    for (let j = 0; j < width; j += 1) {
+      gameField[i][j] = {};
+    }
+  }
 
   // now generate planets to field
   return populateGameFieldWithPlanets(gameField, settings);

@@ -112,9 +112,9 @@ Game.path('settings').schema.path('planetCount').validate((planetCount) => {
 /*
  * Model methonds
  */
-// this filed will represent state of gamefield
+// this filed will represent state of game
 // after initial generation and with all turns applied
-Game.methods.getGameFieldState = (turn) => {
+Game.methods.getGameState = (turn) => {
   const { turns, initialState } = this;
   // let us check function argument. If none provided - return latest state,
   // if value present and <= than turns count - return state on this turn
@@ -122,9 +122,9 @@ Game.methods.getGameFieldState = (turn) => {
 
   // now based on settings and turns determine state of gamefield
   const effectiveTurns = turns.slice(0, targetedTour + 1);
-  const gameFieldState = effectiveTurns.reduce(applyTurnToGame, initialState);
+  const gameState = effectiveTurns.reduce(applyTurnToGame, initialState);
 
-  return gameFieldState;
+  return gameState;
 };
 
 const gameModel = mongoose.model('Game', Game);

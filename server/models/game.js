@@ -23,25 +23,23 @@ const Game = new Schema({
     }
   ],
   settings: {
-    size: {
-      height: {
-        type: Number,
-        required: true,
-        min: [5, 'Field height is too small'],
-        max: [20, 'Field height is too big'],
-      },
-      width: {
-        type: Number,
-        required: true,
-        min: [5, 'Field width is too small'],
-        max: [20, 'Field width is too big'],
-      },
-      planetCount: {
-        type: Number,
-        required: true,
-        min: [2, 'Not enought planet to fight for'],
-        max: [20, 'Field height is too big'],
-      }
+    height: {
+      type: Number,
+      required: true,
+      min: [5, 'Field height is too small'],
+      max: [20, 'Field height is too big'],
+    },
+    width: {
+      type: Number,
+      required: true,
+      min: [5, 'Field width is too small'],
+      max: [20, 'Field width is too big'],
+    },
+    planetCount: {
+      type: Number,
+      required: true,
+      min: [2, 'Not enought planet to fight for'],
+      max: [20, 'Field height is too big'],
     },
     players: {
       type: Number,
@@ -104,10 +102,10 @@ Game.path('players').validate(
 
 // we could not have more planets than cells on gamefield
 Game.path('settings').schema.path('planetCount').validate((planetCount) => {
-  const { height, width } = this;
+  const { height, width, players } = this.settings;
   const maximalNumberOfPlanets = Math.floor(height / 2) * Math.floor(width / 2);
   // should be better than this, no direct swarms
-  return planetCount < maximalNumberOfPlanets;
+  return planetCount < (maximalNumberOfPlanets - players);
 }, 'Game should have at least two players');
 
 

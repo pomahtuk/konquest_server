@@ -89,8 +89,9 @@ const generatePlayerPlanet = (coordinates, playerIndex) => {
 };
 
 const populateGameFieldWithPlanets = (gameField, settings) => {
+  const maxAttempts = 1000;
   const { width, height, planetCount, players } = settings;
-  const newGameField = Object.assign({}, gameField);
+  const newGameField = [...gameField];
   const playerLocations = [
     [0, 0],
     [height - 1, width - 1],
@@ -102,16 +103,23 @@ const populateGameFieldWithPlanets = (gameField, settings) => {
   for (let pIndex = 0; pIndex < players; pIndex += 1) {
     const [pRowIndex, pColumnIndex] = playerLocations[pIndex];
 
-    newGameField[pRowIndex][pColumnIndex] = generatePlayerPlanet(playerLocations[pIndex], pIndex);
+    newGameField[pRowIndex][pColumnIndex].planet = generatePlayerPlanet(playerLocations[pIndex], pIndex);
   }
 
   // make a coordinates dice roll for each planet
+  // this is really suboptimal
   for (let planetIndex = 0; planetIndex < planetCount; planetIndex += 1) {
     let coordinates = coordinatesDiceRoll(height, width);
+    let totalAttempts = 0;
 
-    while (!couldWePlacePlanetHere(gameField, coordinates, settings)) {
+    // if gemeration takes too long - skip, no need to proceed.
+    while (!couldWePlacePlanetHere(gameField, coordinates, settings) && totalAttempts < maxAttempts) {
       coordinates = coordinatesDiceRoll(height, width);
+      totalAttempts += 1;
     }
+    // now we are just silently failing if it is not possible to place a planet nearby
+    // need to do something smarter...
+    // console.log(totalAttempts, maxAttempts, planetIndex);
 
     const [rowIndex, columnIndex] = coordinates;
 

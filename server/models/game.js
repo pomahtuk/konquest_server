@@ -101,11 +101,11 @@ Game.path('players').validate(
 );
 
 // we could not have more planets than cells on gamefield
+// TODO: smarter limit calculation, but we re good for now;
 Game.path('settings').schema.path('planetCount').validate((planetCount) => {
   const { height, width, players } = this.settings;
-  const maximalNumberOfPlanets = Math.floor(height / 2) * Math.floor(width / 2);
   // should be better than this, no direct swarms
-  return planetCount < (maximalNumberOfPlanets - players);
+  return planetCount <= (height + width + players);
 }, 'Game should have at least two players');
 
 

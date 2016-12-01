@@ -32,6 +32,6 @@ const server = http.createServer(app);
 /*
  * Listen on provided port, on all network interfaces.
  */
-server.listen(port, () => console.log(`listening on ${port}`));
+server.listen(port, () => process.env.NODE_ENV !== 'test' && console.log(`listening on ${port}`));
 
 export default app;

@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import favicon from 'serve-favicon';
 import passport from 'passport';
+import session from 'express-session';
 
 const initialAppSetup = (app) => {
   const publicDir = path.join(__dirname, '../../public');
@@ -15,12 +16,14 @@ const initialAppSetup = (app) => {
 
   // uncomment after placing your favicon in /public
   app.use(favicon(path.join(publicDir, 'favicon.ico')));
-  app.use(logger('dev'));
+  if (process.env.NODE_ENV !== 'test') {
+    app.use(logger('dev'));
+  }
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser());
-  app.use(require('express-session')({
-    secret: 'keyboard cat',
+  app.use(session({
+    secret: 'fgkljsdfh',
     resave: false,
     saveUninitialized: false
   }));

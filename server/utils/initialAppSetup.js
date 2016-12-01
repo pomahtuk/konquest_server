@@ -8,7 +8,7 @@ import passport from 'passport';
 import session from 'express-session';
 
 const initialAppSetup = (app) => {
-  const publicDir = path.join(__dirname, '../../public');
+  const publicDir = path.join(__dirname, '../../client_dist');
 
   // view engine setup
   app.set('views', path.join(__dirname, '../../views'));

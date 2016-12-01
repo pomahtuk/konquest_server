@@ -41,3 +41,4 @@ babel_cache
 
 # build directory
 dist
+client_dist

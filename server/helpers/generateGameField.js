@@ -91,16 +91,22 @@ const generatePlayerPlanet = (coordinates, playerIndex) => {
 const populateGameFieldWithPlanets = (gameField, settings) => {
   const { width, height, planetCount, players } = settings;
   const newGameField = Object.assign({}, gameField);
+  const playerLocations = [
+    [0, 0],
+    [height - 1, width - 1],
+    [height - 1, 0],
+    [0, width - 1],
+  ];
 
   // first - create players planets
-  for (let playerIndex = 0; playerIndex < players; playerIndex += 1) {
-    const playerRowIndex = 0;
-    const playerColumnIndex = 0;
-    newGameField[playerRowIndex][playerColumnIndex] = generatePlayerPlanet([0, 0], playerIndex);
+  for (let pIndex = 0; pIndex < players; pIndex += 1) {
+    const [pRowIndex, pColumnIndex] = playerLocations[pIndex];
+
+    newGameField[pRowIndex][pColumnIndex] = generatePlayerPlanet(playerLocations[pIndex], pIndex);
   }
 
   // make a coordinates dice roll for each planet
-  [...Array(planetCount)].forEach(() => {
+  for (let planetIndex = 0; planetIndex < planetCount; planetIndex += 1) {
     let coordinates = coordinatesDiceRoll(height, width);
 
     while (!couldWePlacePlanetHere(gameField, coordinates, settings)) {
@@ -111,7 +117,7 @@ const populateGameFieldWithPlanets = (gameField, settings) => {
 
     // at this point we do have vacant coordinates
     newGameField[rowIndex][columnIndex].planet = generatePlanet(coordinates, settings);
-  });
+  }
 
   return newGameField;
 };

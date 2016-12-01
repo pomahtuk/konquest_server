@@ -11,7 +11,7 @@
     "build-server": "babel server -d dist",
     "serve": "node dist/app.js",
     "test": "npm run test-server && npm run test-client",
-    "test-client": "cd ./client/ && npm test",
+    "test-client": "cd ./client/ && CI=1 npm test",
     "test-server": "NODE_ENV=test mocha --compilers js:babel-core/register -u exports server/test/**/*"
   },
   "dependencies": {

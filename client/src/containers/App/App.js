@@ -8,7 +8,7 @@ import Todo from '../../components/Todo/Todo';
 import logo from '../../assets/logo.svg';
 import './App.css';
 
-const App = ({ todos, onTodoClick }) => (
+const App = ({ todos, onTodoClick, children }) => (
   <div className="App">
     <div className="App-header">
       <img src={logo} className="App-logo" alt="logo" />
@@ -26,6 +26,7 @@ const App = ({ todos, onTodoClick }) => (
         />
       )}
     </ul>
+    { children }
   </div>
 );
 
@@ -35,7 +36,8 @@ App.propTypes = {
     completed: PropTypes.bool.isRequired,
     text: PropTypes.string.isRequired
   }).isRequired).isRequired,
-  onTodoClick: PropTypes.func.isRequired
+  onTodoClick: PropTypes.func.isRequired,
+  children: PropTypes.node
 };
 
 const mapStateToProps = (state) => {

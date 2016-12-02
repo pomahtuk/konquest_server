@@ -4,10 +4,10 @@ import { expect } from 'chai';
 
 import app from '../../app';
 
-describe('"/field" route', () => {
+describe('"/api/field" route', () => {
   it('should return a json object', (done) => {
     supertest(app)
-      .get('/field')
+      .get('/api/field')
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)

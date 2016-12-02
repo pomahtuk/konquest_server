@@ -11,11 +11,11 @@ nav.navbar.navbar-dark.bg-primary.navbar-fixed-top
   ul.nav.navbar-nav.float-xs-right
     if (!user)
       li.nav-item
-        a.nav-link(href="/users/login") Login
+        a.nav-link(href="/api/users/login") Login
       li.nav-item
-        a.nav-link(href="/users/register") Register
+        a.nav-link(href="/api/users/register") Register
     if (user)
       li.nav-item
-        a.nav-link(href="/users/" + user._id) #{user.username}
+        a.nav-link(href="/api/users/" + user._id) #{user.username}
       li.nav-item
-        a.nav-link(href="/users/logout") Logout
+        a.nav-link(href="/api/users/logout") Logout

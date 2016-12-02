@@ -15,6 +15,10 @@ router.get('/register', (req, res) => {
   res.render('users/register', { });
 });
 
+router.get('/me', (req, res) => {
+  res.json(req.user);
+});
+
 router.post('/register', (req, res, next) => {
   const newAccount = new Account({ username: req.body.username });
 
@@ -25,7 +29,7 @@ router.post('/register', (req, res, next) => {
           if (sessionSaveError) {
             return next(sessionSaveError);
           }
-          res.redirect('/');
+          return res.redirect('/');
         });
       });
     }, (registerError) => {

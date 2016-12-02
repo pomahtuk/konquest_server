@@ -3,13 +3,16 @@ import passport from 'passport';
 import bluebird from 'bluebird';
 import { Strategy as LocalStrategy } from 'passport-local';
 
+// config
+import dbParams from '../config/db';
+
 // models
 import Account from '../models/account';
 
 // initial config
 // mongoose
 mongoose.Promise = bluebird;
-mongoose.connect('mongodb://localhost/passport_local_mongoose_express4');
+mongoose.connect(dbParams);
 
 const passportSetup = () => {
   // local strategy

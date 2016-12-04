@@ -1,22 +1,16 @@
 import express from 'express';
 import passport from 'passport';
-import Account from '../models/account';
 import PrettyError from 'pretty-error';
+
+import Account from '../models/account';
 
 const pretty = new PrettyError();
 const router = new express.Router();
 
-/* GET users listing. */
-router.get('/', (req, res) => {
-  res.send('respond with a resource');
-});
-
-router.get('/register', (req, res) => {
-  res.render('users/register', { });
-});
-
 router.get('/me', (req, res) => {
-  res.json(req.user);
+  res.json({
+    user: req.user
+  });
 });
 
 router.post('/register', (req, res, next) => {
@@ -29,30 +23,32 @@ router.post('/register', (req, res, next) => {
           if (sessionSaveError) {
             return next(sessionSaveError);
           }
-          return res.redirect('/');
+          return res.json({
+            user: newAccount
+          });
         });
       });
     }, (registerError) => {
-      res.render('users/register', { error: registerError });
+      res.json({ error: registerError });
     })
     .catch((chainError) => {
-      // report arror to console;
+      // report error to console;
       console.log(pretty.render(chainError));
       return next(chainError);
     });
 });
 
-router.get('/login', (req, res) => {
-  res.render('users/login', { user: req.user });
-});
-
 router.post('/login', passport.authenticate('local'), (req, res) => {
-  res.redirect('/');
+  res.json({
+    user: req.user
+  });
 });
 
 router.get('/logout', (req, res) => {
   req.logout();
-  res.redirect('/');
+  res.json({
+    user: null,
+  });
 });
 
 export default router;

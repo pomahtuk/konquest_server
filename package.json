@@ -5,7 +5,7 @@
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "client": "cd ./client/ && npm run start",
-    "server": "PORT=3001 nodemon server/app.js --exec babel-node",
+    "server": "PORT=3001 nodemon server/app.js --exec babel-node --ignore ./client",
     "build": "npm run build-client && npm run build-server",
     "build-client": "rm -Rf ./client_dist/ && cd ./client && npm run build && cd ../ && mv ./client/build/ ./client_dist",
     "build-server": "babel server -d dist",

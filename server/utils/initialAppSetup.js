@@ -7,7 +7,7 @@ import favicon from 'serve-favicon';
 import passport from 'passport';
 import session from 'express-session';
 
-import { publicDir } from '../config/paths';
+import { publicDir } from '../../config/paths';
 
 const initialAppSetup = (app) => {
   // view engine setup

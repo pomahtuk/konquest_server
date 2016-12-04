@@ -4,7 +4,7 @@ import bluebird from 'bluebird';
 import { Strategy as LocalStrategy } from 'passport-local';
 
 // config
-import dbParams from '../config/db';
+import dbParams from '../../config/db';
 
 // models
 import Account from '../models/account';

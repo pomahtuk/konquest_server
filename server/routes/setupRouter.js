@@ -3,7 +3,7 @@ import path from 'path';
 import index from './index';
 import users from './users';
 
-import { publicDir } from '../config/paths';
+import { publicDir } from '../../config/paths';
 
 const setupRouter = (app) => {
   // use views

@@ -1,16 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Todo from './Todo';
+import AppNavbar from '../AppNavbar';
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
   ReactDOM.render(
-    <Todo
-      onClick={() => true}
-      completed={false}
-      text="todo"
-    />,
+    <AppNavbar authState={{ user: null, isInProgress: false }} />,
     div
   );
 });

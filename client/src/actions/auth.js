@@ -80,6 +80,23 @@ export const getCurrentUser = () => (dispatch) => {
     });
 };
 
+export const logoutUser = () => (dispatch) => {
+  // start auth progress
+  dispatch(setProgresState(true));
+  // call api
+  return api.logoutUser()
+    .then(response => response.data, (error) => {
+      // need to handle error properly
+      dispatch(setProgresState(false));
+      dispatch(setFailureState(processError(error)));
+    })
+    .then((data) => {
+      dispatch(setProgresState(false));
+      dispatch(setUser(data.user));
+    });
+};
+
+
 export const clearAuthError = () => ({
   type: AUTH_CLEAN_FAIL,
 });

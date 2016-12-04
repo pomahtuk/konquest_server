@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
-const AppNavbar = ({ authState }) => {
+const AppNavbar = ({ authState, logoutCallback }) => {
   const { user, isInProgress } = authState;
 
   return (
@@ -36,14 +36,17 @@ const AppNavbar = ({ authState }) => {
           </Navbar.Text>
         }
         { user &&
-          <div>
-            <Navbar.Text pullRight>
-              {user.username}
-            </Navbar.Text>
-            <LinkContainer to="/logout">
-              <NavItem>Logout</NavItem>
-            </LinkContainer>
-          </div>
+          <Nav pullRight>
+            <NavDropdown title={user.username} id="basic-nav-dropdown">
+              <MenuItem eventKey={3.1}>Action</MenuItem>
+              <MenuItem eventKey={3.2}>Another action</MenuItem>
+              <MenuItem eventKey={3.3}>Something else here</MenuItem>
+              <MenuItem divider />
+              <LinkContainer to="/">
+                <MenuItem onClick={logoutCallback}>Logout</MenuItem>
+              </LinkContainer>
+            </NavDropdown>
+          </Nav>
         }
       </Navbar.Collapse>
     </Navbar>
@@ -51,6 +54,7 @@ const AppNavbar = ({ authState }) => {
 };
 
 AppNavbar.propTypes = {
+  logoutCallback: PropTypes.func,
   authState: PropTypes.shape({
     user: PropTypes.object,
     isInProgress: PropTypes.bool,

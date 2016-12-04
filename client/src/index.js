@@ -10,6 +10,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 // app component
 import App from './containers/App';
 import Login from './containers/Login';
+import Register from './containers/Register';
 import NotFound from './components/NotFound';
 
 // store
@@ -26,9 +27,12 @@ ReactDOM.render(
     { /* Tell the Router to use our enhanced history */ }
     <Router history={history}>
       <Route path="/" component={App}>
+        {/* user-related routes */}
         <Route path="/login" component={Login} />
-        <Route path="/register" component={Login} />
-        {/* <Route path="bar" component={Bar}/> */}
+        <Route path="/register" component={Register} />
+        {/* game-related routes */}
+        <Route path="/register" component={Register} />
+        {/* Default not found route */}
         <Route path="*" component={NotFound} />
       </Route>
     </Router>

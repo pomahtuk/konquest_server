@@ -5,8 +5,6 @@ import moxios from 'moxios';
 import * as actions from '../auth';
 import * as types from '../../constants/auth';
 
-import apiHost from '../../../../config/endpoints';
-
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 

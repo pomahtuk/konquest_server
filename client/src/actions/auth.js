@@ -17,12 +17,14 @@ const setFailureState = errors => ({
 });
 
 const processError = (error) => {
-  console.log(error);
-  const { response } = error;
+  let response = error;
+  if (error.response) {
+    response = error.response;
+  }
   return {
     type: 'Something went wrong',
-    data: response.data,
-    status: response.status,
+    data: response.data ? response.data : response.name,
+    status: response.status ? response.status : response.message,
   };
 };
 
@@ -41,13 +43,17 @@ export const autheticateUser = credentials => (dispatch) => {
     .then((data) => {
       if (!requestFailed) {
         dispatch(setProgresState(false));
-        // TODO: check for auth error
-        dispatch(setUser(data.user));
+        if (data.error) {
+          return dispatch(setFailureState(processError(data.error)));
+        }
+        return dispatch(setUser(data.user));
       }
+      return true;
     });
 };
 
 export const createUser = credentials => (dispatch) => {
+  let requestFailed = false;
   // start auth progress
   dispatch(setProgresState(true));
   // call api
@@ -56,11 +62,17 @@ export const createUser = credentials => (dispatch) => {
       // need to handle error properly
       dispatch(setProgresState(false));
       dispatch(setFailureState(processError(error)));
+      requestFailed = true;
     })
     .then((data) => {
-      dispatch(setProgresState(false));
-      // TODO: check for auth error
-      dispatch(setUser(data.user));
+      if (!requestFailed) {
+        dispatch(setProgresState(false));
+        if (data.error) {
+          return dispatch(setFailureState(processError(data.error)));
+        }
+        return dispatch(setUser(data.user));
+      }
+      return true;
     });
 };
 
@@ -95,7 +107,6 @@ export const logoutUser = () => (dispatch) => {
       dispatch(setUser(data.user));
     });
 };
-
 
 export const clearAuthError = () => ({
   type: AUTH_CLEAN_FAIL,

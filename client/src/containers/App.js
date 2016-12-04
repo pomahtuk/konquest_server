@@ -9,8 +9,10 @@ import { logoutUser, getCurrentUser } from '../actions/auth';
 
 class App extends Component {
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch(getCurrentUser());
+    const { dispatch, auth } = this.props;
+    if (!auth.user) {
+      dispatch(getCurrentUser());
+    }
   }
 
   render() {

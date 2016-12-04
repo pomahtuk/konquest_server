@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import apiHost from '../../../config/endpoints';
+const apiHost = '';
 
 const getCurrentUser = () => axios.get(`${apiHost}/api/users/me`);
 

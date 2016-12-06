@@ -13,21 +13,38 @@ class Register extends Component {
     this.usernameInput = null;
     // bindings
     this.submitForm = this.submitForm.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.getConfirmationValidationState = this.getConfirmationValidationState.bind(this);
     this.getUsernameValidationState = this.getUsernameValidationState.bind(this);
     this.getPasswordValidationState = this.getPasswordValidationState.bind(this);
     // state
     this.state = {
-      username: '',
-      confirmation: '',
-      password: '',
+      username: {
+        value: '',
+        shouldValidate: false,
+      },
+      confirmation: {
+        value: '',
+        shouldValidate: false,
+      },
+      password: {
+        value: '',
+        shouldValidate: false,
+      },
     };
   }
 
   getConfirmationValidationState() {
-    const { password, confirmation } = this.state;
+    const { password: passObj, confirmation: confObj } = this.state;
     let valudationResult = null;
+
+    if (!(passObj.shouldValidate && confObj.shouldValidate)) {
+      return valudationResult;
+    }
+
+    const password = passObj.value;
+    const confirmation = confObj.value;
 
     if ((password && confirmation) && password !== confirmation) {
       valudationResult = 'error';
@@ -41,8 +58,14 @@ class Register extends Component {
   }
 
   getUsernameValidationState() {
-    const { username } = this.state;
+    const { username: unameObj } = this.state;
     let valudationResult = null;
+
+    if (!unameObj.shouldValidate) {
+      return valudationResult;
+    }
+
+    const username = unameObj.value;
 
     // if length is less than 3 or no @ symbol in username
     if (username && (username.length < 3 || username.indexOf('@') === -1)) {
@@ -57,8 +80,14 @@ class Register extends Component {
   }
 
   getPasswordValidationState() {
-    const { password } = this.state;
+    const { password: passObj } = this.state;
     let valudationResult = null;
+
+    if (!passObj.shouldValidate) {
+      return valudationResult;
+    }
+
+    const password = passObj.value;
 
     // if length is less than 3 or no @ symbol in username
     if (password && password.length < 3) {
@@ -72,9 +101,23 @@ class Register extends Component {
     return valudationResult;
   }
 
-  handleChange(type, event) {
+  handleBlur(type) {
+    const value = this.state[type].value;
     this.setState({
-      [type]: event.target.value
+      [type]: {
+        shouldValidate: true,
+        value,
+      }
+    });
+  }
+
+  handleChange(type, event) {
+    const shouldValidate = this.state[type].shouldValidate;
+    this.setState({
+      [type]: {
+        value: event.target.value,
+        shouldValidate,
+      }
     });
   }
 
@@ -84,6 +127,8 @@ class Register extends Component {
     const confirmationValidationState = this.getConfirmationValidationState();
     const usernameValidationState = this.getUsernameValidationState();
     const passwordValidationState = this.getPasswordValidationState();
+
+    // TODO:  explicive error messages
 
     if (confirmationValidationState !== 'success') {
       return false;
@@ -127,8 +172,9 @@ class Register extends Component {
                     name="username"
                     type="username"
                     placeholder="Email"
-                    value={username}
+                    value={username.value}
                     onChange={event => this.handleChange('username', event)}
+                    onBlur={() => this.handleBlur('username')}
                   />
                   <FormControl.Feedback />
                   {this.getUsernameValidationState() === 'error' &&
@@ -149,8 +195,9 @@ class Register extends Component {
                     name="password"
                     type="password"
                     placeholder="Password"
-                    value={password}
+                    value={password.value}
                     onChange={event => this.handleChange('password', event)}
+                    onBlur={() => this.handleBlur('password')}
                   />
                   <FormControl.Feedback />
                   {this.getPasswordValidationState() === 'error' &&
@@ -171,8 +218,9 @@ class Register extends Component {
                     name="confirm"
                     type="password"
                     placeholder="Password confirmation"
-                    value={confirmation}
+                    value={confirmation.value}
                     onChange={event => this.handleChange('confirmation', event)}
+                    onBlur={() => this.handleBlur('confirmation')}
                   />
                   <FormControl.Feedback />
                   {this.getConfirmationValidationState() === 'error' &&

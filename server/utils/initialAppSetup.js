@@ -6,8 +6,12 @@ import path from 'path';
 import favicon from 'serve-favicon';
 import passport from 'passport';
 import session from 'express-session';
+import connectMongo from 'connect-mongo';
+import mongoose from 'mongoose';
 
 import { publicDir } from '../config/paths';
+
+const MongoStore = connectMongo(session);
 
 const initialAppSetup = (app) => {
   // view engine setup
@@ -25,10 +29,12 @@ const initialAppSetup = (app) => {
   app.use(session({
     secret: 'fgkljsdfh',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
   }));
   app.use(passport.initialize());
   app.use(passport.session());
+
   app.use(express.static(publicDir));
 };
 

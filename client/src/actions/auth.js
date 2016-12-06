@@ -22,57 +22,53 @@ const processError = (error) => {
     response = error.response;
   }
   return {
-    type: 'Something went wrong',
+    type: 'Error happened :(',
     data: response.data ? response.data : response.name,
     status: response.status ? response.status : response.message,
   };
 };
 
 export const autheticateUser = credentials => (dispatch) => {
-  let requestFailed = false;
   // start auth progress
   dispatch(setProgresState(true));
   // call api
   return api.loginWithCredentials(credentials)
-    .then(response => response.data, (error) => {
+    .then(response => response.data)
+    .then((data) => {
+      dispatch(setProgresState(false));
+      if (data.error) {
+        throw new Error(data.error.message);
+      }
+      return dispatch(setUser(data.user));
+    })
+    .catch((error) => {
       // need to handle error properly
       dispatch(setProgresState(false));
       dispatch(setFailureState(processError(error)));
-      requestFailed = true;
-    })
-    .then((data) => {
-      if (!requestFailed) {
-        dispatch(setProgresState(false));
-        if (data.error) {
-          return dispatch(setFailureState(processError(data.error)));
-        }
-        return dispatch(setUser(data.user));
-      }
-      return true;
+      // for further processing
+      throw error;
     });
 };
 
 export const createUser = credentials => (dispatch) => {
-  let requestFailed = false;
   // start auth progress
   dispatch(setProgresState(true));
   // call api
   return api.registerUser(credentials)
-    .then(response => response.data, (error) => {
+    .then(response => response.data)
+    .then((data) => {
+      dispatch(setProgresState(false));
+      if (data.error) {
+        throw new Error(data.error.message);
+      }
+      return dispatch(setUser(data.user));
+    })
+    .catch((error) => {
       // need to handle error properly
       dispatch(setProgresState(false));
       dispatch(setFailureState(processError(error)));
-      requestFailed = true;
-    })
-    .then((data) => {
-      if (!requestFailed) {
-        dispatch(setProgresState(false));
-        if (data.error) {
-          return dispatch(setFailureState(processError(data.error)));
-        }
-        return dispatch(setUser(data.user));
-      }
-      return true;
+      // for further processing
+      throw error;
     });
 };
 
@@ -81,14 +77,17 @@ export const getCurrentUser = () => (dispatch) => {
   dispatch(setProgresState(true));
   // call api
   return api.getCurrentUser()
-    .then(response => response.data, (error) => {
-      // need to handle error properly
-      dispatch(setProgresState(false));
-      dispatch(setFailureState(processError(error)));
-    })
+    .then(response => response.data)
     .then((data) => {
       dispatch(setProgresState(false));
       dispatch(setUser(data.user));
+    })
+    .catch((error) => {
+      // need to handle error properly
+      dispatch(setProgresState(false));
+      dispatch(setFailureState(processError(error)));
+      // for further processing
+      throw error;
     });
 };
 
@@ -97,14 +96,17 @@ export const logoutUser = () => (dispatch) => {
   dispatch(setProgresState(true));
   // call api
   return api.logoutUser()
-    .then(response => response.data, (error) => {
-      // need to handle error properly
-      dispatch(setProgresState(false));
-      dispatch(setFailureState(processError(error)));
-    })
+    .then(response => response.data)
     .then((data) => {
       dispatch(setProgresState(false));
       dispatch(setUser(data.user));
+    })
+    .catch((error) => {
+      // need to handle error properly
+      dispatch(setProgresState(false));
+      dispatch(setFailureState(processError(error)));
+      // for further processing
+      throw error;
     });
 };
 

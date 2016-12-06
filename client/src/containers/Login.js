@@ -8,32 +8,55 @@ class Login extends Component {
   constructor(props) {
     super(props);
     // input references
-    this.passwordInput = null;
-    this.usernameInput = null;
+    this.state = {
+      username: '',
+      password: '',
+    };
     // bindings
     this.submitForm = this.submitForm.bind(this);
+    this.onFieldChanged = this.onFieldChanged.bind(this);
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    const { router: { push } } = nextProps;
+    if (nextState.userLoggedIn) {
+      push('/');
+    }
+  }
+
+  onFieldChanged(event) {
+    const { name, value } = event.target;
+    this.setState({
+      [name]: value
+    });
   }
 
   submitForm() {
     const { dispatch } = this.props;
+    const { username, password } = this.state;
 
     const credentials = {
-      password: this.passwordInput.value,
-      username: this.usernameInput.value,
+      password,
+      username,
     };
 
-    dispatch(autheticateUser(credentials));
+    dispatch(autheticateUser(credentials))
+      .then(() => this.setState({ userLoggedIn: true }))
+      .catch(error => this.setState({ error }));
   }
 
   render() {
+    const { isAuthInProgress } = this.props;
+    const { username, password } = this.state;
+
     return (
       <div>
         <PageHeader>
           Sign in
         </PageHeader>
         <Row>
-          <Col xs={12} md={6} mdOffset={3}>
-            <Form horizontal>
+          <Col xs={12} md={8} mdOffset={2}>
+            <Form horizontal onChange={this.onFieldChanged}>
               <FormGroup controlId="formHorizontalEmail">
                 <Col componentClass={ControlLabel} sm={2}>
                   Email
@@ -42,8 +65,8 @@ class Login extends Component {
                   <FormControl
                     name="username"
                     type="username"
+                    value={username}
                     placeholder="Email"
-                    inputRef={(ref) => { this.usernameInput = ref; }}
                   />
                 </Col>
               </FormGroup>
@@ -56,16 +79,16 @@ class Login extends Component {
                   <FormControl
                     name="password"
                     type="password"
+                    value={password}
                     placeholder="Password"
-                    inputRef={(ref) => { this.passwordInput = ref; }}
                   />
                 </Col>
               </FormGroup>
 
               <FormGroup>
                 <Col sm={12}>
-                  <Button onClick={this.submitForm}>
-                    Sign in
+                  <Button disabled={isAuthInProgress} onClick={this.submitForm}>
+                    {isAuthInProgress ? 'Signing...' : 'Sign in'}
                   </Button>
                 </Col>
               </FormGroup>
@@ -78,9 +101,9 @@ class Login extends Component {
 }
 
 Login.propTypes = {
-  dispatch: PropTypes.func,
+  dispatch: PropTypes.func.isRequired,
+  isAuthInProgress: PropTypes.bool.isRequired,
+  router: PropTypes.object.isRequired,
 };
 
-const ConnectedLogin = connect()(Login);
-
-export default ConnectedLogin;
+export default connect(state => ({ isAuthInProgress: state.auth.isInProgress }))(Login);

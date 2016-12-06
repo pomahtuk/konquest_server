@@ -13,8 +13,8 @@ class Register extends Component {
     this.usernameInput = null;
     // bindings
     this.submitForm = this.submitForm.bind(this);
-    this.handleBlur = this.handleBlur.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    this.onFieldBlur = this.onFieldBlur.bind(this);
+    this.onFieldChanged = this.onFieldChanged.bind(this);
     this.getConfirmationValidationState = this.getConfirmationValidationState.bind(this);
     this.getUsernameValidationState = this.getUsernameValidationState.bind(this);
     this.getPasswordValidationState = this.getPasswordValidationState.bind(this);
@@ -35,11 +35,45 @@ class Register extends Component {
     };
   }
 
-  getConfirmationValidationState() {
+  componentWillUpdate(nextProps, nextState) {
+    const { router: { push } } = nextProps;
+    if (nextState.userCreated) {
+      push('/');
+    }
+  }
+
+  onFieldChanged(event) {
+    const { name, value } = event.target;
+    const shouldValidate = this.state[name].shouldValidate;
+    this.setState({
+      [name]: {
+        value,
+        shouldValidate
+      }
+    });
+  }
+
+  onFieldBlur(event) {
+    const { name } = event.target;
+
+    if (!name) {
+      return false;
+    }
+
+    const value = this.state[name].value;
+    return this.setState({
+      [name]: {
+        shouldValidate: true,
+        value,
+      }
+    });
+  }
+
+  getConfirmationValidationState(force = false) {
     const { password: passObj, confirmation: confObj } = this.state;
     let valudationResult = null;
 
-    if (!(passObj.shouldValidate && confObj.shouldValidate)) {
+    if (!(passObj.shouldValidate && confObj.shouldValidate) && !force) {
       return valudationResult;
     }
 
@@ -57,11 +91,11 @@ class Register extends Component {
     return valudationResult;
   }
 
-  getUsernameValidationState() {
+  getUsernameValidationState(force = false) {
     const { username: unameObj } = this.state;
     let valudationResult = null;
 
-    if (!unameObj.shouldValidate) {
+    if (!unameObj.shouldValidate && !force) {
       return valudationResult;
     }
 
@@ -79,11 +113,11 @@ class Register extends Component {
     return valudationResult;
   }
 
-  getPasswordValidationState() {
+  getPasswordValidationState(force = false) {
     const { password: passObj } = this.state;
     let valudationResult = null;
 
-    if (!passObj.shouldValidate) {
+    if (!passObj.shouldValidate && !force) {
       return valudationResult;
     }
 
@@ -101,34 +135,14 @@ class Register extends Component {
     return valudationResult;
   }
 
-  handleBlur(type) {
-    const value = this.state[type].value;
-    this.setState({
-      [type]: {
-        shouldValidate: true,
-        value,
-      }
-    });
-  }
-
-  handleChange(type, event) {
-    const shouldValidate = this.state[type].shouldValidate;
-    this.setState({
-      [type]: {
-        value: event.target.value,
-        shouldValidate,
-      }
-    });
-  }
-
   submitForm() {
     const { dispatch } = this.props;
-    const { username, password } = this.state;
-    const confirmationValidationState = this.getConfirmationValidationState();
-    const usernameValidationState = this.getUsernameValidationState();
-    const passwordValidationState = this.getPasswordValidationState();
+    const { password: passObj, username: unameObj } = this.state;
+    const confirmationValidationState = this.getConfirmationValidationState(true);
+    const usernameValidationState = this.getUsernameValidationState(true);
+    const passwordValidationState = this.getPasswordValidationState(true);
 
-    // TODO:  explicive error messages
+    // TODO: explicit error messages
 
     if (confirmationValidationState !== 'success') {
       return false;
@@ -143,23 +157,33 @@ class Register extends Component {
     }
 
     const credentials = {
-      password,
-      username,
+      password: passObj.value,
+      username: unameObj.value,
     };
 
-    return dispatch(createUser(credentials));
+    return dispatch(createUser(credentials))
+      .then(() => this.setState({ userCreated: true }))
+      .catch(error => this.setState({ error }));
   }
 
   render() {
     const { confirmation, username, password } = this.state;
+    const { isAuthInProgress } = this.props;
+
     return (
       <div>
         <PageHeader>
           Sign up
         </PageHeader>
         <Row>
-          <Col xs={12} md={6} mdOffset={3}>
-            <Form horizontal>
+          <Col xs={12} md={8} mdOffset={2}>
+            <Form
+              horizontal
+              onChange={this.onFieldChanged}
+              onSubmit={this.onSubmit}
+              onBlur={this.onFieldBlur}
+              className={isAuthInProgress ? 'disabled' : ''}
+            >
               <FormGroup
                 controlId="formHorizontalEmail"
                 validationState={this.getUsernameValidationState()}
@@ -170,11 +194,9 @@ class Register extends Component {
                 <Col sm={10}>
                   <FormControl
                     name="username"
-                    type="username"
+                    type="email"
                     placeholder="Email"
                     value={username.value}
-                    onChange={event => this.handleChange('username', event)}
-                    onBlur={() => this.handleBlur('username')}
                   />
                   <FormControl.Feedback />
                   {this.getUsernameValidationState() === 'error' &&
@@ -196,8 +218,6 @@ class Register extends Component {
                     type="password"
                     placeholder="Password"
                     value={password.value}
-                    onChange={event => this.handleChange('password', event)}
-                    onBlur={() => this.handleBlur('password')}
                   />
                   <FormControl.Feedback />
                   {this.getPasswordValidationState() === 'error' &&
@@ -215,12 +235,10 @@ class Register extends Component {
                 </Col>
                 <Col sm={10}>
                   <FormControl
-                    name="confirm"
+                    name="confirmation"
                     type="password"
                     placeholder="Password confirmation"
                     value={confirmation.value}
-                    onChange={event => this.handleChange('confirmation', event)}
-                    onBlur={() => this.handleBlur('confirmation')}
                   />
                   <FormControl.Feedback />
                   {this.getConfirmationValidationState() === 'error' &&
@@ -231,8 +249,8 @@ class Register extends Component {
 
               <FormGroup>
                 <Col sm={12}>
-                  <Button onClick={this.submitForm}>
-                    Sign up
+                  <Button disabled={isAuthInProgress} onClick={this.submitForm}>
+                    {isAuthInProgress ? 'Signing...' : 'Sign up'}
                   </Button>
                 </Col>
               </FormGroup>
@@ -245,7 +263,9 @@ class Register extends Component {
 }
 
 Register.propTypes = {
-  dispatch: PropTypes.func,
+  isAuthInProgress: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  router: PropTypes.object.isRequired,
 };
 
-export default connect()(Register);
+export default connect(state => ({ isAuthInProgress: state.auth.isInProgress }))(Register);

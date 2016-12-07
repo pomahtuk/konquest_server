@@ -1,9 +1,7 @@
 import React, { PropTypes } from 'react';
 
 const GameGrid = (props) => {
-  const { width, height, settings: { height: colCount, width: rowCount } } = props;
-  const rowStep = width / rowCount;
-  const colStep = height / colCount;
+  const { colStep, rowStep, colCount, rowCount } = props;
   const gridLines = [];
   let coords;
 
@@ -12,7 +10,7 @@ const GameGrid = (props) => {
       x1: colNumber * rowStep,
       x2: colNumber * rowStep,
       y1: 0,
-      y2: height,
+      y2: colStep * colCount,
     };
     gridLines.push(<line {...coords} stroke="green" strokeWidth={1} key={`c_${colNumber}`} />);
   }
@@ -22,25 +20,23 @@ const GameGrid = (props) => {
       y1: rowNumber * colStep,
       y2: rowNumber * colStep,
       x1: 0,
-      x2: width,
+      x2: rowStep * rowCount,
     };
     gridLines.push(<line {...coords} stroke="green" strokeWidth={1} key={`r_${rowNumber}`} />);
   }
 
   return (
-    <g>
+    <g className="gameFieldGrid">
       {gridLines}
     </g>
   );
 };
 
 GameGrid.propTypes = {
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
-  settings: PropTypes.shape({
-    height: PropTypes.number,
-    width: PropTypes.number,
-  }),
+  rowStep: PropTypes.number.isRequired,
+  colStep: PropTypes.number.isRequired,
+  rowCount: PropTypes.number.isRequired,
+  colCount: PropTypes.number.isRequired,
 };
 
 export default GameGrid;

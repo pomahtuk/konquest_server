@@ -16,8 +16,8 @@ const AppNavbar = ({ authState, logoutCallback }) => {
       </Navbar.Header>
       <Navbar.Collapse>
         <Nav>
-          <LinkContainer to="/">
-            <NavItem>Home</NavItem>
+          <LinkContainer to="/game">
+            <NavItem>Game</NavItem>
           </LinkContainer>
         </Nav>
         { !user && !isInProgress &&
@@ -38,9 +38,7 @@ const AppNavbar = ({ authState, logoutCallback }) => {
         { user &&
           <Nav pullRight>
             <NavDropdown title={user.username} id="basic-nav-dropdown">
-              <MenuItem eventKey={3.1}>Action</MenuItem>
-              <MenuItem eventKey={3.2}>Another action</MenuItem>
-              <MenuItem eventKey={3.3}>Something else here</MenuItem>
+              <MenuItem>Game</MenuItem>
               <MenuItem divider />
               <LinkContainer to="/">
                 <MenuItem onClick={logoutCallback}>Logout</MenuItem>

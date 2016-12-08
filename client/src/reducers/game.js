@@ -22,7 +22,6 @@ const auth = (state = {
     height: 10,
   },
 }, action) => {
-  console.log(action);
   switch (action.type) {
     case GAME_SET_DEMO_FIELD:
       return Object.assign({}, state, {

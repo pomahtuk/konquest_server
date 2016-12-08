@@ -2,14 +2,21 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import GameField from '../components/GameField';
+import GameOptions from '../components/GameOptions';
 import { getDemoGameField } from '../actions/game';
 
 class GameFieldContainer extends Component {
+  constructor(props) {
+    super(props);
+
+    this.generateGameField = this.generateGameField.bind(this);
+  }
+
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch(getDemoGameField({
       width: 10,
-      height: 10,
+      height: 12,
       players: 2,
       planetCount: 5,
     }));
@@ -21,7 +28,7 @@ class GameFieldContainer extends Component {
   }
 
   render() {
-    const { isLoading } = this.props;
+    const { isLoading, settings } = this.props;
 
     if (isLoading) {
       return (
@@ -33,7 +40,7 @@ class GameFieldContainer extends Component {
       <div>
         <GameField {...this.props} />
 
-        {/* <GameOptions onGenerate={this.generateGameField.bind(this)}/> */}
+        <GameOptions onGenerate={this.generateGameField} {...settings} />
       </div>
     );
   }
@@ -42,6 +49,7 @@ class GameFieldContainer extends Component {
 GameFieldContainer.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  settings: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => {

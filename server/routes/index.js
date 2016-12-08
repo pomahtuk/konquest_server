@@ -11,12 +11,9 @@ router.get('/', (req, res) => {
 
 /* GET game field. */
 router.get('/field', (req, res) => {
-  const gameField = generateGameField({
-    width: 10,
-    height: 10,
-    planetCount: 10,
-    players: 2,
-  });
+  console.log(req.query);
+
+  const gameField = generateGameField(req.query);
 
   res.json(gameField);
 });

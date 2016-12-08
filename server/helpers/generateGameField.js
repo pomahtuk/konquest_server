@@ -1,3 +1,5 @@
+// May be not a full game field, just planets?
+
 const getRandomIntFromZero = max => Math.floor(Math.random() * max);
 
 const getRandomIntArbitrary = (min, max) => Math.floor((Math.random() * (max - min)) + min);

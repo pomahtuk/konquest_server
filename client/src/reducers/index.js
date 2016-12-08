@@ -1,5 +1,7 @@
 import auth from './auth';
+import game from './game';
 
 export default {
-  auth
+  auth,
+  game,
 };

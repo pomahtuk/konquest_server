@@ -5,3 +5,7 @@ export const GAME_LOADING = 'GAME_LOADING';
 export const GAME_UPDATE = 'GAME_UPDATE';
 export const GAME_GET_STATUS = 'GAME_GET_STATUS';
 export const GAME_SUBMIT_TURN = 'GAME_SUBMIT_TURN';
+
+// test constants
+export const GAME_GET_DEMO_FIELD = 'GAME_GET_DEMO_FIELD';
+export const GAME_SET_DEMO_FIELD = 'GAME_SET_DEMO_FIELD';

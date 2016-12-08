@@ -13,7 +13,7 @@ import Login from './containers/Login';
 import Register from './containers/Register';
 import NotFound from './components/NotFound';
 
-import GameField from './components/GameField';
+import ConnectedGameField from './containers/ConnectedGameField';
 
 // store
 import store from './helpers/createStore';
@@ -33,7 +33,7 @@ ReactDOM.render(
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         {/* game-related routes */}
-        <Route path="/game" component={GameField} />
+        <Route path="/game" component={ConnectedGameField} />
         {/* Default not found route */}
         <Route path="*" component={NotFound} />
       </Route>

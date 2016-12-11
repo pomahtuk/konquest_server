@@ -4,7 +4,7 @@ import GameGrid from './GameGrid';
 import Planet from './Planet';
 
 const GameField = (props) => {
-  const { planets, gameId, height, width, settings: { height: colCount, width: rowCount } } = props;
+  const { planets, gameId, height, width, settings: { height: rowCount, width: colCount } } = props;
   const rowStep = width / rowCount;
   const colStep = height / colCount;
 

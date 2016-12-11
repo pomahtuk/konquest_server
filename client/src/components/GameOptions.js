@@ -20,7 +20,7 @@ class GameOptions extends Component {
   onFieldChanged(event) {
     const { name, value } = event.target;
     this.setState({
-      [name]: value,
+      [name]: Number(value),
     });
   }
 
@@ -29,30 +29,57 @@ class GameOptions extends Component {
 
     return (
       <div>
-        <Form horizontal onChange={this.onFieldChanged}>
+        <Form horizontal>
           <FormGroup>
             <ControlLabel>
               Width:
             </ControlLabel>
-            <FormControl value={width} name="width" type="number" min="0" max="20" />
+            <FormControl
+              value={width}
+              name="width"
+              type="number"
+              min="0"
+              max="20"
+              onChange={this.onFieldChanged}
+            />
           </FormGroup>
           <FormGroup>
             <ControlLabel>
               Height:
             </ControlLabel>
-            <FormControl value={height} name="height" type="number" min="0" max="20" />
+            <FormControl
+              value={height}
+              name="height"
+              type="number"
+              min="0"
+              max="20"
+              onChange={this.onFieldChanged}
+            />
           </FormGroup>
           <FormGroup>
             <ControlLabel>
               Players:
             </ControlLabel>
-            <FormControl value={players} name="players" type="number" min="2" max="4" />
+            <FormControl
+              value={players}
+              name="players"
+              type="number"
+              min="2"
+              max="4"
+              onChange={this.onFieldChanged}
+            />
           </FormGroup>
           <FormGroup>
             <ControlLabel>
               Free planet count:
             </ControlLabel>
-            <FormControl value={planetCount} name="planetCount" type="number" min="1" />
+            <FormControl
+              value={planetCount}
+              name="planetCount"
+              type="number"
+              min="1"
+              onChange={this.onFieldChanged}
+            />
           </FormGroup>
           <Button onClick={() => onGenerate(this.state)}>
             Generate!

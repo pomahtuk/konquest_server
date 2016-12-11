@@ -16,9 +16,9 @@ class GameFieldContainer extends Component {
     const { dispatch } = this.props;
     dispatch(getDemoGameField({
       width: 10,
-      height: 12,
+      height: 10,
       players: 2,
-      planetCount: 5,
+      planetCount: 10,
     }));
   }
 

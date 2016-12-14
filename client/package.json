@@ -5,7 +5,7 @@
   "proxy": "http://localhost:3001/",
   "devDependencies": {
     "moxios": "^0.3.0",
-    "react-scripts": "0.7.0",
+    "react-scripts": "^0.8.4",
     "redux-mock-store": "^1.2.1"
   },
   "dependencies": {

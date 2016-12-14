@@ -73,6 +73,7 @@ const generatePlanet = (coordinates, settings) => {
     production: planetProduction,
     shipStrength: getRandomArbitrary(0.3, 1 - weaknessMultiplier),
     belongsTo: null,
+    id: `x${coordinates[0]}y${coordinates[1]}`,
   };
 
   return planet;
@@ -85,6 +86,7 @@ const generatePlayerPlanet = (coordinates, playerIndex) => {
     production: 10,
     shipStrength: 0.75,
     belongsTo: `player${playerIndex}`,
+    id: `p${playerIndex}x${coordinates[0]}y${coordinates[1]}`,
   };
 
   return planet;

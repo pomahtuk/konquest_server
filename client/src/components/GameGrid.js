@@ -1,5 +1,9 @@
 import React, { PropTypes } from 'react';
 
+const renderLine = (coords, key) => (
+  <line {...coords} stroke="green" strokeDasharray="5,5" strokeWidth={1} key={key} />
+);
+
 const GameGrid = (props) => {
   const { colStep, rowStep, colCount, rowCount } = props;
   const gridLines = [];
@@ -7,22 +11,22 @@ const GameGrid = (props) => {
 
   for (let colNumber = 0; colNumber <= colCount; colNumber += 1) {
     coords = {
-      x1: colNumber * rowStep,
-      x2: colNumber * rowStep,
+      x1: colNumber * colStep,
+      x2: colNumber * colStep,
       y1: 0,
-      y2: colStep * colCount,
+      y2: rowStep * rowCount,
     };
-    gridLines.push(<line {...coords} stroke="green" strokeWidth={1} key={`c_${colNumber}`} />);
+    gridLines.push(renderLine(coords, `c_${colNumber}`));
   }
 
   for (let rowNumber = 0; rowNumber <= rowCount; rowNumber += 1) {
     coords = {
-      y1: rowNumber * colStep,
-      y2: rowNumber * colStep,
+      y1: rowNumber * rowStep,
+      y2: rowNumber * rowStep,
       x1: 0,
-      x2: rowStep * rowCount,
+      x2: colStep * colCount,
     };
-    gridLines.push(<line {...coords} stroke="green" strokeWidth={1} key={`r_${rowNumber}`} />);
+    gridLines.push(renderLine(coords, `r_${rowNumber}`));
   }
 
   return (

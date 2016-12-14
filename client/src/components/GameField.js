@@ -4,9 +4,9 @@ import GameGrid from './GameGrid';
 import Planet from './Planet';
 
 const GameField = (props) => {
-  const { planets, gameId, height, width, settings: { height: rowCount, width: colCount } } = props;
-  const rowStep = width / rowCount;
-  const colStep = height / colCount;
+  const { planets, gameId, height, width, settings: { height: rowCount, width: colCount }, onPlanetClick } = props;
+  const rowStep = height / rowCount;
+  const colStep = width / colCount;
 
   return (
     <div className="gameField" style={{ marginTop: '20px' }}>
@@ -19,7 +19,13 @@ const GameField = (props) => {
         />
 
         <g className="gameFieldPlanets">
-          {planets.map((planet, index) => <Planet planet={planet} rowStep={rowStep} colStep={colStep} key={index} />)}
+          {[...planets.values()].map(planet => <Planet
+            planet={planet}
+            rowStep={rowStep}
+            colStep={colStep}
+            key={planet.id}
+            onClick={() => onPlanetClick(planet.id)}
+          />)}
         </g>
       </svg>
     </div>
@@ -30,11 +36,12 @@ GameField.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   gameId: PropTypes.string,
-  planets: PropTypes.array.isRequired,
+  planets: PropTypes.object.isRequired,
   settings: PropTypes.shape({
     height: PropTypes.number,
     width: PropTypes.number,
   }),
+  onPlanetClick: PropTypes.func.isRequired,
 };
 
 GameField.defaultProps = {

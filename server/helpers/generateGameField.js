@@ -1,14 +1,14 @@
-// May be not a full game field, just planets?
-
-const getRandomIntFromZero = max => Math.floor(Math.random() * max);
+let settings = {};
 
 const getRandomIntArbitrary = (min, max) => Math.floor((Math.random() * (max - min)) + min);
 
 const getRandomArbitrary = (min, max) => (Math.random() * (max - min)) + min;
 
-const getPlanetStrengthAdjuster = (coordinates, settings) => {
-  const planetShouldBeWeaker = (coordinates[0] <= 1 || coordinates[0] >= settings.height - 1)
-    || (coordinates[1] <= 1 || coordinates[1] >= settings.width - 1);
+const getPlanetStrengthAdjuster = (coordinates) => {
+  const { width, height } = settings;
+
+  const planetShouldBeWeaker = (coordinates[0] <= 1 || coordinates[0] >= height - 1)
+    || (coordinates[1] <= 1 || coordinates[1] >= width - 1);
 
   if (planetShouldBeWeaker) {
     // lets assume this is weak enought
@@ -18,48 +18,25 @@ const getPlanetStrengthAdjuster = (coordinates, settings) => {
   return 0;
 };
 
-const coordinatesDiceRoll = (height, width) =>
-  [getRandomIntFromZero(height), getRandomIntFromZero(width)];
-
-const getNeightboursArray = ([rowIndex, columnIndex], settings) => {
-  const maxRowIndex = rowIndex + 1 >= settings.height ? rowIndex : rowIndex + 1;
+const getNeightboursArray = ([rowIndex, columnIndex]) => {
+  const { width, height } = settings;
+  const maxRowIndex = rowIndex + 1 >= height ? rowIndex : rowIndex + 1;
   const minRowIndex = rowIndex - 1 < 0 ? rowIndex : rowIndex - 1;
-  const maxColIndex = columnIndex + 1 >= settings.width ? columnIndex : columnIndex + 1;
+  const maxColIndex = columnIndex + 1 >= width ? columnIndex : columnIndex + 1;
   const minColIndex = columnIndex - 1 < 0 ? columnIndex : columnIndex - 1;
 
-  const neightboursArray = [];
+  const neighboursArray = [];
 
   for (let i = minRowIndex; i <= maxRowIndex; i += 1) {
     for (let j = minColIndex; j <= maxColIndex; j += 1) {
-      neightboursArray.push([i, j]);
+      neighboursArray.push([i, j]);
     }
   }
 
-  return neightboursArray;
+  return neighboursArray;
 };
 
-const couldWePlacePlanetHere = (gameField, coordinates, settings) => {
-  const [rowIndex, columnIndex] = coordinates;
-  // might be not a best solution to declare like this
-  const neightborsArray = getNeightboursArray(coordinates, settings);
-
-  let somethingPlacedInSurrounding = false;
-
-  // first - check original spot
-  if (gameField[rowIndex][columnIndex].planet) {
-    return false;
-  }
-
-  // then check surroundings
-  somethingPlacedInSurrounding = neightborsArray.some(([neighbourRowIndex, neighbourColumnIndex]) =>
-    !!gameField[neighbourRowIndex][neighbourColumnIndex].planet
-  );
-
-  return !somethingPlacedInSurrounding;
-  // return true;
-};
-
-const generatePlanet = (coordinates, settings) => {
+const generatePlanet = (coordinates) => {
   // make some random numbers here
   // but reminder - planets closer to edges
   // should be weaker so player will always be able
@@ -92,10 +69,25 @@ const generatePlayerPlanet = (coordinates, playerIndex) => {
   return planet;
 };
 
-const populateGameFieldWithPlanets = (gameField, settings) => {
+const generateGameField = (requestSettings, attempts = 0) => {
+  settings = requestSettings;
+  let resultingGameField = [];
+
+  const freeCoords = new Set();
+  const { width, height, players, planetCount } = settings;
   const maxAttempts = 1000;
-  const { width, height, planetCount, players } = settings;
-  const newGameField = [...gameField];
+  let shouldStartOver = false;
+
+  for (let i = 0; i < height; i += 1) {
+    resultingGameField[i] = [];
+    for (let j = 0; j < width; j += 1) {
+      resultingGameField[i][j] = {};
+      // mark as vacnt
+      freeCoords.add(JSON.stringify([i, j]));
+    }
+  }
+
+  // now generate planets to field
   const playerLocations = [
     [0, 0],
     [height - 1, width - 1],
@@ -106,47 +98,42 @@ const populateGameFieldWithPlanets = (gameField, settings) => {
   // first - create players planets
   for (let pIndex = 0; pIndex < players; pIndex += 1) {
     const [pRowIndex, pColumnIndex] = playerLocations[pIndex];
-
-    newGameField[pRowIndex][pColumnIndex].planet = generatePlayerPlanet(playerLocations[pIndex], pIndex);
+    resultingGameField[pRowIndex][pColumnIndex].planet = generatePlayerPlanet(playerLocations[pIndex], pIndex);
+    // mark player locations unavailable
+    freeCoords.delete(JSON.stringify([pRowIndex, pColumnIndex]));
+    // mark surroundings unavailable
+    getNeightboursArray([pRowIndex, pColumnIndex]).forEach(neighborCoords =>
+      freeCoords.delete(JSON.stringify(neighborCoords))
+    );
   }
 
-  // make a coordinates dice roll for each planet
-  // this is really suboptimal
+  // pick random free coord and place planet there
+  // remove this coord and surroundings from roster
   for (let planetIndex = 0; planetIndex < planetCount; planetIndex += 1) {
-    let coordinates = coordinatesDiceRoll(height, width);
-    let totalAttempts = 0;
+    // random point between 0 and number of keys left
+    const freeCoordsKeys = [...freeCoords.keys()];
 
-    // if gemeration takes too long - skip, no need to proceed.
-    while (!couldWePlacePlanetHere(gameField, coordinates, settings) && totalAttempts < maxAttempts) {
-      coordinates = coordinatesDiceRoll(height, width);
-      totalAttempts += 1;
-    }
-    // now we are just silently failing if it is not possible to place a planet nearby
-    // need to do something smarter...
-    // console.log(totalAttempts, maxAttempts, planetIndex);
-
-    const [rowIndex, columnIndex] = coordinates;
-
-    // at this point we do have vacant coordinates
-    newGameField[rowIndex][columnIndex].planet = generatePlanet(coordinates, settings);
-  }
-
-  return newGameField;
-};
-
-const generateGameField = (settings) => {
-  const { width, height } = settings;
-  const gameField = [];
-
-  for (let i = 0; i < height; i += 1) {
-    gameField[i] = [];
-    for (let j = 0; j < width; j += 1) {
-      gameField[i][j] = {};
+    if (freeCoordsKeys.length > 0) {
+      const randomPointIndex = getRandomIntArbitrary(0, freeCoordsKeys.length);
+      const randomPointRaw = freeCoordsKeys[randomPointIndex];
+      const randomPoint = JSON.parse(freeCoordsKeys[randomPointIndex]);
+      freeCoords.delete(randomPointRaw);
+      resultingGameField[randomPoint[0]][randomPoint[1]].planet = generatePlanet(randomPoint);
+      getNeightboursArray(randomPoint).forEach(neighborCoords => freeCoords.delete(JSON.stringify(neighborCoords)));
+    } else {
+      shouldStartOver = true;
     }
   }
 
-  // now generate planets to field
-  return populateGameFieldWithPlanets(gameField, settings);
+  // now it is time to try few more times
+  if (shouldStartOver && attempts < maxAttempts) {
+    resultingGameField = generateGameField(requestSettings, attempts + 1);
+  } else if (shouldStartOver) {
+    // now we faied enought, considering problem unsolvable
+    return [];
+  }
+
+  return resultingGameField;
 };
 
-export default generateGameField;
+module.exports = generateGameField;

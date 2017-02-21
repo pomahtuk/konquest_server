@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
-// import Promise from 'bluebird';
 
 // own helpers
 import applyTurnToGame from '../helpers/applyTurnToGameField';
+import generatePrivateKey from '../helpers/generatePrivateKey';
 // import generateGameField from '../helpers/generateGameField';
 
 const Game = new Schema({
@@ -12,6 +12,7 @@ const Game = new Schema({
       ref: 'Account'
     }
   ],
+  privateKey: { type: String, default: generatePrivateKey() },
   turns: [
     {
       player: {
@@ -96,17 +97,30 @@ const Game = new Schema({
  */
 // game should have at least two players
 Game.path('players').validate(
-  players => players && (players.length >= 2),
-  'Game should have at least two players'
+  players => players && (players.length >= 2) && (players.length <= 4),
+  'Game should have at least two players and no more than 4'
 );
 
 // we could not have more planets than cells on gamefield
-// TODO: smarter limit calculation, but we re good for now;
+Game.path('settings').schema.path('height').validate(
+  height => height > 4,
+  'Height of gamefield should be more than 4'
+);
+
+// we could not have more planets than cells on gamefield
+Game.path('settings').schema.path('width').validate(
+  width => width > 4,
+  'Width of gamefield should be more than 4'
+);
+
+// we could not have more planets than cells on gamefield
 Game.path('settings').schema.path('planetCount').validate((planetCount) => {
   const { height, width, players } = this.settings;
+  // rought formula to get max amount of planets for gamefield
+  const maxCountForSetup = Math.ceil(((height * width) / 4) - ((height + width) / height));
   // should be better than this, no direct swarms
-  return planetCount <= (height + width + players);
-}, 'Game should have at least two players');
+  return planetCount <= (maxCountForSetup - players);
+}, 'Too many free planets, not fitting gamefield');
 
 
 /*
